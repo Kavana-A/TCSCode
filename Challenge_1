@@ -1,0 +1,110 @@
+
+----------------------------------------LOGIN COMPONENT----------------------------------------
+import { OnInit, Component } from '@angular/core';
+import { Router } from '@angular/router';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+
+@Component({
+	selector: '',
+	templateUrl: '',
+	styleUrls: []
+})
+export class LoginComponent implements OnInit {
+	loginForm!: FormGroup;
+	errorMsg!: any;
+	
+	constructor(
+		private formBuilder: FormBuilder,
+		private loginService: LoginService,
+		private route: Router
+	) { }
+	
+	onLogin() {
+		this.loginService.subscribe(
+			data => {
+				if(data && data.length) {
+					let authenticate = data.find(user => user.userName === loginForm.value.userName && user.password === loginForm.value.password);
+					if(authenticate) {
+						sessionStorage.setItem('userName', user.userName)
+						this.route.navigate(['/welcome'])
+					} else {
+						this.errorMsg = 'Invalid Credentials';
+					}
+				}
+				
+			},
+			error => this.errorMsg = error
+		)
+	}
+	
+	ngOnInit() {
+		this.loginForm = this.formBuilder.group({
+			userName: new FormControl('', [Validators.required]),
+			password: new FormControl('', [Validators.required])
+		})
+	}
+}
+----------------------------------------LOGIN TEMPLATE----------------------------------------
+<form [formGroup]="loginForm">
+	<div>
+		<label>UserName: </label
+		<input type="text" formControlName="userName" />
+	</div>
+	<div>
+		<label>Password: </label
+		<input type="password" formControlName="password" />
+	</div>
+</form>
+----------------------------------------LOGIN SERVICE----------------------------------------
+import { Injectable } from '@angular/core';
+import { HttpClient, HttpErrorResponse } from '@angular/http';
+import { tap } from 'rxjs/operators';
+
+@Injectable({
+	providedIn: 'root'
+})
+export class LoginService {
+
+	loginUrl: string ='assets/data/users.json';
+	constructor(
+		private http: HttpClient
+	) {}
+	
+	onLogin() {
+		return this.http.get(this.loginUrl).pipe(
+			catchError(this.handleError)
+		);
+	}
+	
+	handleError(err: HttpErrorResponse) {
+		throwError(err.error.message)
+	}
+}
+------------------------------------WELCOME COMPONENT--------------------
+import { OnInit, Component } from '@angular/core';
+
+@Component({
+	selector: '',
+	templateUrl: '',
+	styleUrls: []
+})
+export class WelcomeComponent implements OnInit {
+	userName!: string;
+	
+	ngOnInit() {
+		this.userName = sessionStorage.getItem('userName')
+	}
+}
+
+---------------------------------------CUSTOM PIPE------------------------------------------
+import { Pipe, PipeTransform } from '@angular/core';
+
+@Pipe({
+	name: 'custom
+})
+export class CustomPipe implements PipeTransform {
+	
+	transform(value: string) {
+		return value.toUpperCase();
+	}
+}
