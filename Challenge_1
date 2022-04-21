@@ -54,6 +54,10 @@ export class LoginComponent implements OnInit {
 		<label>Password: </label
 		<input type="password" formControlName="password" />
 	</div>
+	<p *ngIf="errorMsg">{{errorMsg}}</p>
+	<div>
+		<button [disabled]="!loginForm.valid" (click)="onLogin()">Login</button>
+	</div>
 </form>
 ----------------------------------------LOGIN SERVICE----------------------------------------
 import { Injectable } from '@angular/core';
